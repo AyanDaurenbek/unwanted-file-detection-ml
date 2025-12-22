@@ -1,0 +1,18 @@
+api:
+  host: 0.0.0.0
+  port: 8000
+  max_file_size_mb: 20
+  save_samples: false
+  allowed_mime_types:
+    - application/pdf
+    - application/vnd.ms-excel
+    - application/vnd.openxmlformats-officedocument.wordprocessingml.document
+    - application/octet-stream
+security:
+  api_key: ${API_KEY}
+database:
+  url: ${DATABASE_URL}
+redis:
+  url: ${REDIS_URL}
+model:
+  active_version: ${ACTIVE_MODEL_VERSION}

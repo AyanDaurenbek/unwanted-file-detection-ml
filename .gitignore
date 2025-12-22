@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+local.db
+test_api.db
+models/*/*.pkl
+models/*/metrics.json
+models/*/preprocess.pkl
+models/*/feature_schema.json
+models/metrics.json
+models/model_card.md
+.env
