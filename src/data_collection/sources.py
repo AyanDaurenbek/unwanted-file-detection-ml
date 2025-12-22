@@ -11,7 +11,7 @@ class DatasetSource:
 
 def default_sources() -> List[DatasetSource]:
     return [
-        DatasetSource("EMBER", "https://example.com/ember", "Check EMBER license"),
-        DatasetSource("MalwareBazaar", "https://bazaar.abuse.ch/", "Requires terms acceptance"),
-        DatasetSource("BODMAS", "https://example.com/bodmas", "Placeholder source"),
+        DatasetSource("EMBER", "https://github.com/elastic/ember", "CC BY-SA 4.0"),
+        DatasetSource("MalwareBazaar", "https://bazaar.abuse.ch/", "Requires terms acceptance; metadata only by default"),
+        DatasetSource("BODMAS", "https://www.kaggle.com/datasets/mahyarelsayad/bodmas", "Kaggle terms acceptance required"),
     ]

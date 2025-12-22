@@ -2,7 +2,10 @@ import io
 import math
 from typing import Any, Dict
 
-import magic
+try:  # pragma: no cover - optional dependency
+    import magic
+except Exception:  # pragma: no cover
+    magic = None
 
 from src.feature_extraction.base import FeatureExtractor
 
@@ -46,5 +49,5 @@ class GenericFeatureExtractor(FeatureExtractor):
             "entropy": _shannon_entropy(content[:4096]),
             "num_printable_strings": num_strings,
             "avg_string_len": avg_len,
-            "mime_type": mime_type or detected,
+            "mime_type": mime_type or detected or "application/octet-stream",
         }

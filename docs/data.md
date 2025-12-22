@@ -1,6 +1,6 @@
 # Data
 
-Datasets are organized under the `data/` directory. Use `src/data_collection/downloader.py` to prepare directories in dry-run mode, leaving instructions for manual downloads that respect licenses.
+Datasets are organized under the `data/` directory. Use `src/data_collection/downloader.py` to prepare directories in dry-run mode, leaving instructions for manual downloads that respect licenses. See `src/data_collection/datasets_overview.md` for source details and licensing notes.
 
 Synthetic data generation is supported through `src/models/synthetic_data_generator.py`, producing reproducible tabular features across five classes: benign, malware, potentially_unwanted, policy_violation, and confidential_suspected.
 
