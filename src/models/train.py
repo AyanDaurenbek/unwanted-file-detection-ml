@@ -55,6 +55,40 @@ def evaluate(model: Any, X_test: pd.DataFrame, y_test: np.ndarray) -> Dict[str, 
     return metrics
 
 
+def load_dataset(cfg: Dict[str, Any], categorical: list[str], numeric: list[str]) -> tuple[pd.DataFrame, np.ndarray, str]:
+    data_cfg = cfg.get("data", {})
+    data_path = data_cfg.get("path")
+
+    if data_path:
+        df = pd.read_csv(data_path)
+        target_column = data_cfg.get("target_column", "label")
+
+        feature_columns = numeric + categorical
+        missing_columns = [col for col in feature_columns + [target_column] if col not in df.columns]
+        if missing_columns:
+            missing_str = ", ".join(missing_columns)
+            raise ValueError(f"Missing columns in dataset {data_path}: {missing_str}")
+
+        X = df[feature_columns]
+        y = df[target_column].to_numpy()
+        training_source = str(data_path)
+    else:
+        X_raw, y = generate_synthetic_dataset(cfg.get("train_samples", 500), seed=cfg.get("seed", 42))
+        df = pd.DataFrame(X_raw, columns=numeric[: X_raw.shape[1]])
+        for missing_num in numeric[len(df.columns) :]:
+            df[missing_num] = 0.0
+
+        for cat_col in categorical:
+            df[cat_col] = np.random.choice(
+                ["application/pdf", "application/octet-stream"], size=len(df)
+            )
+
+        X = df[numeric + categorical]
+        training_source = "synthetic"
+
+    return X, y, training_source
+
+
 def train(config_path: str) -> Dict[str, Any]:
     with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
@@ -62,12 +96,10 @@ def train(config_path: str) -> Dict[str, Any]:
     categorical = cfg["features"]["categorical"]
     numeric = cfg["features"]["numeric"]
 
-    X, y = generate_synthetic_dataset(cfg.get("train_samples", 500), seed=cfg.get("seed", 42))
-    columns = numeric + categorical
-    df = pd.DataFrame(X, columns=numeric + ["num_sections", "dummy", "dummy2"][: len(categorical)])
-    df[categorical[0]] = np.random.choice(["application/pdf", "application/octet-stream"], size=len(df))
-    df = df[numeric + categorical]
-    X_train, X_test, y_train, y_test = train_test_split(df, y, test_size=0.2, random_state=cfg.get("seed", 42))
+    X, y, training_source = load_dataset(cfg, categorical, numeric)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=cfg.get("seed", 42)
+    )
 
     model, preprocess = build_model(cfg, categorical, numeric)
     model.fit(X_train, y_train)
@@ -89,7 +121,7 @@ def train(config_path: str) -> Dict[str, Any]:
         f.write(
             "# Model Card\n\n"
             f"Version: {version}\n\n"
-            "Training data: synthetic\n\n"
+            f"Training data: {training_source}\n\n"
             f"Classes: {', '.join(CLASSES)}\n\n"
             f"Metrics: {json.dumps(metrics, indent=2)}\n"
         )

@@ -6,6 +6,9 @@ test_samples: 200
 features:
   categorical: ["mime_type"]
   numeric: ["file_size", "entropy", "num_printable_strings", "avg_string_len", "num_sections"]
+data:
+  path: null  # Set to your dataset CSV, e.g., data/train.csv
+  target_column: label
 model:
   baseline:
     type: "random_forest"
